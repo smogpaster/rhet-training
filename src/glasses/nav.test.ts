@@ -18,7 +18,7 @@ async function setup(names: string[]) {
     d.activeWorkshopId = ws.id
   })
   const host = new MockHost()
-  const nav = new Navigator(store, new Renderer(host))
+  const nav = new Navigator(store, new Renderer(host), host)
   host.onEvenHubEvent(e => {
     const i = normalizeEvent(e)
     if (i) nav.handle(i)

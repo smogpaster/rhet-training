@@ -6,6 +6,13 @@
   "min_app_version": "2.2.10",
   "min_sdk_version": "0.0.16",
   "entrypoint": "index.html",
-  "permissions": [],
-  "supported_languages": ["de"]
+  "permissions": [
+    {
+      "name": "g2-microphone",
+      "desc": "Nimmt die Rede der teilnehmenden Person über das Brillenmikrofon auf, um Feedback-Marker mit Transkript-Ausschnitten zu versehen."
+    }
+  ],
+  "supported_languages": [
+    "de"
+  ]
 }

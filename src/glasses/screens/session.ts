@@ -1,6 +1,8 @@
 import { mmss } from '../../data/format'
 import { MARKER_LABEL, type MarkerKind, type Session } from '../../data/model'
-import { addMarker, elapsedSec, endSession, findSession, removeMarker, togglePause } from '../../session/session'
+import { AudioRecorder } from '../../session/recorder'
+import { audioStore } from '../../session/audioStore'
+import { addMarker, elapsedSec, endSession, findSession, removeMarker, setSessionAudio, togglePause } from '../../session/session'
 import type { GlassesInput } from '../input'
 import type { PageSpec } from '../page'
 import type { Nav, Screen } from '../nav'
@@ -24,8 +26,15 @@ export class SessionScreen implements Screen {
   private confirmText = ''
   private lastTap: { markerId: string; at: number } | null = null
 
+  private recorder: AudioRecorder
+
   constructor(private nav: Nav, private sessionId: string) {
     this.ticker = setInterval(() => this.tick(), 1000)
+    this.recorder = new AudioRecorder(nav.host)
+    void this.recorder.start().then(ok => {
+      if (!ok) this.confirm('Mikrofon nicht verfügbar – nur Marker')
+      this.recorder.paused = !!this.session()?.pausedAt
+    })
   }
 
   private session(): Session | null {
@@ -86,8 +95,17 @@ export class SessionScreen implements Screen {
     this.confirm(`● ${MARKER_LABEL[kind]}  ${mmss(m.t)}`)
   }
 
+  private async stopRecording() {
+    const wav = await this.recorder.stop()
+    this.recorder.clear()
+    if (!wav) return
+    const saved = await audioStore.save(this.sessionId, wav)
+    setSessionAudio(this.nav.store, this.sessionId, saved)
+  }
+
   private end() {
     endSession(this.nav.store, this.sessionId)
+    void this.stopRecording()
     this.nav.replace(new ReviewScreen(this.nav, this.sessionId))
   }
 
@@ -100,6 +118,7 @@ export class SessionScreen implements Screen {
       case 'menu':
         if (input.itemId === MENU.SESSION_PAUSE) {
           const paused = togglePause(this.nav.store, this.sessionId)
+          this.recorder.paused = paused
           this.confirmText = paused ? 'Pause' : 'Weiter'
           return this.nav.render()
         }
@@ -107,6 +126,7 @@ export class SessionScreen implements Screen {
         if (input.itemId === MENU.EXIT) {
           // Session sauber abschließen, bevor die App endet.
           endSession(this.nav.store, this.sessionId)
+          void this.stopRecording()
           return this.nav.exitApp()
         }
         return
@@ -119,5 +139,7 @@ export class SessionScreen implements Screen {
     if (this.ticker) clearInterval(this.ticker)
     if (this.confirmTimer) clearTimeout(this.confirmTimer)
     this.ticker = null
+    // Verlassen ohne "Beenden" (z. B. App-Ende): Aufnahme trotzdem sichern.
+    if (this.recorder.active) void this.stopRecording()
   }
 }

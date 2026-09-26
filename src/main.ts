@@ -32,7 +32,7 @@ async function main() {
   render(h(App, { store, mock }), document.getElementById('app')!)
 
   // 4. Brillen-Oberfläche
-  const nav = new Navigator(store, new Renderer(host))
+  const nav = new Navigator(store, new Renderer(host), host)
   const unsubscribe = host.onEvenHubEvent(event => {
     const input = normalizeEvent(event)
     if (!input) return

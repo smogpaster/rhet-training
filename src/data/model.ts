@@ -53,6 +53,8 @@ export interface Session {
   pausedAt: string | null
   markers: Marker[]
   transcript?: TranscriptWord[]
+  /** true, sobald eine Aufnahme in IndexedDB liegt; false nach dem Löschen */
+  hasAudio?: boolean
   audioDeleted: boolean
 }
 

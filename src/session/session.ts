@@ -1,6 +1,7 @@
 // Session-Logik als reine Funktionen auf dem Store, damit Brille und iPhone
 // denselben Zustand sehen und ein App-Neustart nichts verliert.
-import { newId, type Marker, type MarkerKind, type Session, type Workshop } from '../data/model'
+import { newId, type Marker, type MarkerKind, type Session, type TranscriptWord, type Workshop } from '../data/model'
+import { fillExcerpts } from './transcription/align'
 import type { Store } from '../data/store'
 
 /** Abgelaufene Redezeit in Sekunden (Pausen abgezogen). */
@@ -84,6 +85,21 @@ function finish(s: Session, now: number) {
 export function endSession(store: Store, sessionId: string, now = Date.now()) {
   edit(store, sessionId, s => {
     if (s.status === 'running') finish(s, now)
+  })
+}
+
+export function setSessionAudio(store: Store, sessionId: string, hasAudio: boolean) {
+  edit(store, sessionId, s => {
+    s.hasAudio = hasAudio
+    if (!hasAudio) s.audioDeleted = true
+  })
+}
+
+/** Transkript übernehmen und die Marker-Ausschnitte (−10 s / +5 s) füllen. */
+export function setTranscript(store: Store, sessionId: string, words: TranscriptWord[]) {
+  edit(store, sessionId, s => {
+    s.transcript = words
+    s.markers = fillExcerpts(s.markers, words)
   })
 }
 

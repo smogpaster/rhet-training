@@ -3,7 +3,8 @@ import { formatDateTime, mmss } from '../data/format'
 import { MARKER_LABEL, type Session, type Workshop } from '../data/model'
 import type { Store } from '../data/store'
 import { exportFileName, sessionToMarkdown } from '../export/markdown'
-import { deleteSession, elapsedSec, endSession } from '../session/session'
+import { audioStore } from '../session/audioStore'
+import { deleteSession, elapsedSec, endSession, setSessionAudio } from '../session/session'
 
 function useNow(active: boolean): number {
   const [now, setNow] = useState(Date.now())
@@ -88,6 +89,32 @@ export function SessionsView({ store, ws }: { store: Store; ws: Workshop | null 
         </ul>
         {open.status === 'ended' && (
           <div class="card" style={{ marginTop: 16 }}>
+            <h3 style={{ marginTop: 0 }}>Aufnahme und Transkript</h3>
+            {open.transcript ? (
+              <p class="small">Transkript vorhanden ({open.transcript.length} Wörter).</p>
+            ) : open.hasAudio ? (
+              <div>
+                <p class="small">Aufnahme gespeichert, noch nicht transkribiert.</p>
+                <div class="row wrap">
+                  <button class="btn" disabled title="Kommt in Meilenstein 4">
+                    Transkribieren (Dienst noch nicht gewählt)
+                  </button>
+                  <button
+                    class="btn danger small"
+                    onClick={async () => {
+                      if (!confirm('Aufnahme dieser Session endgültig löschen?')) return
+                      await audioStore.remove(open.id)
+                      setSessionAudio(store, open.id, false)
+                    }}
+                  >
+                    Aufnahme löschen
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p class="small dim">{open.audioDeleted ? 'Aufnahme gelöscht.' : 'Keine Aufnahme (Mikrofon war nicht verfügbar).'}</p>
+            )}
+            <h3>Export</h3>
             <div class="row wrap">
               <button class="btn primary" onClick={async () => setMessage(await shareMarkdown(md, exportFileName(participant, open)))}>
                 Als Markdown teilen
@@ -98,7 +125,8 @@ export function SessionsView({ store, ws }: { store: Store; ws: Workshop | null 
               <button
                 class="btn danger"
                 onClick={() => {
-                  if (confirm('Diese Session mit allen Markern löschen?')) {
+                  if (confirm('Diese Session mit allen Markern und der Aufnahme löschen?')) {
+                    void audioStore.remove(open.id)
                     deleteSession(store, open.id)
                     setOpenId(null)
                   }

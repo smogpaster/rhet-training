@@ -1,4 +1,5 @@
 import type { Store } from '../data/store'
+import type { GlassesHost } from './host'
 import type { GlassesInput } from './input'
 import type { PageSpec } from './page'
 import type { Renderer } from './render'
@@ -18,6 +19,7 @@ export interface Screen {
 export interface Nav {
   store: Store
   renderer: Renderer
+  host: GlassesHost
   push(screen: Screen): void
   pop(): void
   replace(screen: Screen): void
@@ -33,7 +35,7 @@ export interface Nav {
 export class Navigator implements Nav {
   private stack: Screen[] = []
 
-  constructor(public store: Store, public renderer: Renderer) {}
+  constructor(public store: Store, public renderer: Renderer, public host: GlassesHost) {}
 
   get current(): Screen | undefined {
     return this.stack[this.stack.length - 1]
