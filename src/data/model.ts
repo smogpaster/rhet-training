@@ -47,6 +47,10 @@ export interface Session {
   startedAt: string
   durationSec: number
   status: 'running' | 'ended'
+  /** Summe bisheriger Pausen in Sekunden */
+  pausedSec: number
+  /** ISO-Zeitstempel, wenn gerade pausiert, sonst null */
+  pausedAt: string | null
   markers: Marker[]
   transcript?: TranscriptWord[]
   audioDeleted: boolean

@@ -76,3 +76,62 @@ describe('glasses navigation', () => {
     expect(host.exitRequested).toBe(true)
   })
 })
+
+describe('session flow', () => {
+  it('starts a session, records markers by tap and double tap, ends via menu', async () => {
+    const { host, store } = await setup(['Anna'])
+    store.update(d => void (d.workshops[0].consentConfirmed = true))
+    host.input('down') // "Session starten"
+    host.input('click')
+    await flush()
+    host.input('click') // Anna
+    await flush()
+    host.input('click') // Session starten
+    await flush()
+    expect(host.page?.texts[0].content).toMatch(/^00:0\d$/)
+    expect(host.page?.menu.map(m => m.label)).toEqual(['Pause', 'Session beenden', 'App beenden'])
+
+    host.input('click')
+    await flush()
+    expect(host.page?.texts[1].content).toMatch(/● stark  00:0\d/)
+    await new Promise(r => setTimeout(r, 500)) // deutlich nach dem Einfachtipp
+    host.input('double_click')
+    await flush()
+    const running = store.activeWorkshop()!.sessions[0]
+    expect(running.markers.map(m => m.kind)).toEqual(['stark', 'besprechen'])
+
+    host.menuClick(4) // Session beenden
+    await flush()
+    const ended = store.activeWorkshop()!.sessions[0]
+    expect(ended.status).toBe('ended')
+    expect(host.page?.texts[0].content).toContain('Anna · 00:0')
+    expect(host.page?.texts[0].content).toContain('stark')
+
+    host.input('double_click') // zur Startseite
+    await flush()
+    expect(host.page?.lists[0].items[0]).toBe('Teilnehmende')
+  })
+
+  it('refuses to start without consent', async () => {
+    const { host } = await setup(['Anna'])
+    host.input('click')
+    await flush()
+    host.input('click')
+    await flush()
+    host.input('click')
+    await flush()
+    expect(host.page?.texts[1].content).toContain('Einwilligung')
+  })
+
+  it('converts a tap that was part of a double tap', async () => {
+    const { host, store } = await setup(['Anna'])
+    store.update(d => void (d.workshops[0].consentConfirmed = true))
+    host.input('down'); host.input('click'); await flush()
+    host.input('click'); await flush()
+    host.input('click'); await flush()
+    host.input('click')
+    host.input('double_click')
+    await flush()
+    expect(store.activeWorkshop()!.sessions[0].markers.map(m => m.kind)).toEqual(['besprechen'])
+  })
+})

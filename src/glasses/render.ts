@@ -96,9 +96,17 @@ export class Renderer {
       for (const t of spec.texts ?? []) this.lastText.set(t.id, t.content)
       if (!this.started) {
         const result = await withTimeout(this.host.createStartUpPageContainer(new CreateStartUpPageContainer(page)), 'Startseite')
-        if (result !== 0) throw new Error(`Startseite fehlgeschlagen (Code ${result})`)
+        if (result === 0) {
+          this.started = true
+          return result
+        }
+        // Code 1 kommt auch, wenn der Host schon eine Startseite hat (z. B. Hot-Reload
+        // im Simulator). Dann reicht ein Neuaufbau.
+        console.warn(`Startseite fehlgeschlagen (Code ${result}), versuche Neuaufbau`)
+        const rebuilt = await withTimeout(this.host.rebuildPageContainer(new RebuildPageContainer(page)), 'Seitenaufbau')
+        if (!rebuilt) throw new Error(`Startseite fehlgeschlagen (Code ${result})`)
         this.started = true
-        return result
+        return rebuilt
       }
       return withTimeout(this.host.rebuildPageContainer(new RebuildPageContainer(page)), 'Seitenaufbau')
     })

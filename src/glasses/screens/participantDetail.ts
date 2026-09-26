@@ -3,7 +3,9 @@ import type { Participant, Workshop } from '../../data/model'
 import type { GlassesInput } from '../input'
 import type { PageSpec } from '../page'
 import type { Nav, Screen } from '../nav'
+import { startSession } from '../../session/session'
 import { DIM, MENU, MENU_EXIT, MENU_HOME } from './common'
+import { SessionScreen } from './session'
 import type { ParticipantsOptions } from './participants'
 
 const BODY = { id: 1, name: 'person' }
@@ -77,9 +79,15 @@ export class ParticipantDetailScreen implements Screen {
         return this.move(1)
       case 'double':
         return this.nav.pop()
-      case 'tap':
-        // Meilenstein 3: Session für diese Person starten. Bis dahin nur Hinweis.
-        return this.nav.updateText(HINT.id, HINT.name, 'Session-Start kommt in Meilenstein 3', DIM)
+      case 'tap': {
+        const cur = this.current()
+        if (!cur) return
+        if (!cur.ws.consentConfirmed) {
+          return this.nav.updateText(HINT.id, HINT.name, 'Zuerst auf dem iPhone bestätigen: Einwilligung liegt vor', DIM)
+        }
+        const s = startSession(this.nav.store, cur.ws.id, cur.p.id)
+        return this.nav.push(new SessionScreen(this.nav, s.id))
+      }
       case 'menu':
         if (input.itemId === MENU.EXIT) return this.nav.exitApp()
         if (input.itemId === MENU.HOME) {

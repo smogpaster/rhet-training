@@ -21,7 +21,12 @@ async function main() {
   // 2. Daten laden: Hauptspeicher ist die Even-App, Browser-localStorage als Spiegel.
   const store = new Store(real ? new HostStore(real) : new BrowserStore(), real ? new BrowserStore() : undefined)
   await store.load()
-  if (new URLSearchParams(location.search).has('demo')) store.update(seedDemo)
+  const params = new URLSearchParams(location.search)
+  if (params.has('demo')) {
+    store.update(seedDemo)
+    // Nur zum Testen im Simulator: ?demo&consent setzt die Einwilligung als bestätigt.
+    if (params.has('consent')) store.update(d => d.workshops.forEach(w => void (w.consentConfirmed = true)))
+  }
 
   // 3. iPhone-Oberfläche
   render(h(App, { store, mock }), document.getElementById('app')!)
@@ -46,7 +51,7 @@ async function main() {
   let renderTimer: ReturnType<typeof setTimeout> | null = null
   store.subscribe(() => {
     if (renderTimer) clearTimeout(renderTimer)
-    renderTimer = setTimeout(() => nav.render(), 300)
+    renderTimer = setTimeout(() => nav.renderAfterDataChange(), 300)
   })
 
   window.addEventListener('beforeunload', () => void store.flush())

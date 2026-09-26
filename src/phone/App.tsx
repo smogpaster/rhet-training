@@ -3,6 +3,7 @@ import type { Store } from '../data/store'
 import type { MockHost } from '../glasses/mockHost'
 import { GlassesPreview } from './GlassesPreview'
 import { ParticipantsView } from './ParticipantsView'
+import { SessionsView } from './SessionsView'
 import { SettingsView } from './SettingsView'
 import { WorkshopsView } from './WorkshopsView'
 import { useStore } from './useStore'
@@ -24,12 +25,7 @@ export function App({ store, mock }: { store: Store; mock: MockHost | null }) {
         {mock && <GlassesPreview host={mock} />}
         {tab === 'workshops' && <WorkshopsView store={store} data={data} />}
         {tab === 'people' && <ParticipantsView store={store} ws={ws} />}
-        {tab === 'sessions' && (
-          <div>
-            <h2>Sessions</h2>
-            <p class="dim">Feedback-Marker und Rückblick kommen in Meilenstein 3.</p>
-          </div>
-        )}
+        {tab === 'sessions' && <SessionsView store={store} ws={ws} />}
         {tab === 'settings' && <SettingsView store={store} data={data} ws={ws} />}
       </main>
       <nav class="tabs">

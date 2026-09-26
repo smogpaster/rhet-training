@@ -10,6 +10,8 @@ export interface Screen {
   onInput(input: GlassesInput): void
   /** Wird beim Verlassen aufgerufen (Timer stoppen etc.). */
   onLeave?(): void
+  /** true: Bildschirm aktualisiert sich selbst, kein Neuaufbau bei Datenänderungen (vermeidet Flackern). */
+  selfUpdating?: boolean
 }
 
 /** Navigations-Kontext, den jeder Bildschirm bekommt. */
@@ -19,6 +21,8 @@ export interface Nav {
   push(screen: Screen): void
   pop(): void
   replace(screen: Screen): void
+  /** Tiefe des Navigationsstapels (1 = Startseite). */
+  depth(): number
   /** Aktuellen Bildschirm komplett neu zeichnen. */
   render(): void
   /** Nur einen Textcontainer aktualisieren (flackerfrei). */
@@ -33,6 +37,10 @@ export class Navigator implements Nav {
 
   get current(): Screen | undefined {
     return this.stack[this.stack.length - 1]
+  }
+
+  depth(): number {
+    return this.stack.length
   }
 
   push(screen: Screen) {
@@ -56,6 +64,11 @@ export class Navigator implements Nav {
   render() {
     const s = this.current
     if (s) void this.renderer.showPage(s.page())
+  }
+
+  /** Neuaufbau nach Datenänderung vom iPhone, außer der Bildschirm pflegt sich selbst. */
+  renderAfterDataChange() {
+    if (!this.current?.selfUpdating) this.render()
   }
 
   updateText(id: number, name: string, content: string, textColor?: number) {
