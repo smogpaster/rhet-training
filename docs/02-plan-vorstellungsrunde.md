@@ -111,3 +111,36 @@ deiner Seminar-Übersicht, sobald sie vorliegt.
 5. Sprachnotizen (abhängig von Frage 2).
 
 Jeder Schritt einzeln committet und testbar.
+
+## Abgleich mit deiner Seminar-Übersicht („Hart aber fair“)
+
+Die Referenz-Seite deckt sich mit dem Plan. Daraus übernehme ich zusätzlich:
+
+- **Personengruppe** je Person (z. B. Außendienst, Innendienst, Produkt/Business Development,
+  Neu im Vertrieb) mit Farbe und Filter. Die Gruppen sind pro Workshop frei benennbar, das LLM
+  schlägt sie vor. Auf der Brille: Filter im Kontextmenü, z. B. nur Außendienst hell, der
+  Rest gedimmt. Hilfreich beim Einteilen der Rollenspielgruppen.
+- **Platzcodes nach Seiten** (links, Stirnseite, rechts, jeweils durchnummeriert) und die
+  **Nummer in der Vorstellungsrunde** am Platz. Die Runde läuft in der Referenz einmal um das
+  U herum. Genau diese Reihenfolge nimmt die Ring-Navigation auf der Brille.
+- **Profilfelder** wie in der Referenz: Funktion, Erfahrung, Gebiet, Hintergrund, bester
+  Türöffner (ausführlich), Tafel-Stichwort (kurz), „Für heute“-Hinweis, Hinweis zur
+  Schreibweise, eigene Notizen.
+- **Gruppenebene**: „Türöffner der Gruppe“ (aus den Tafel-Stichworten), „Erwartungen und
+  Vorbehalte“, „Gruppe auf einen Blick“ (kurze Einschätzung plus Anzahl je Personengruppe).
+  Das LLM schlägt diese Texte vor, du korrigierst sie wie die Profile.
+
+Auswirkungen auf die Brille:
+
+- Das **Kurzprofil** zeigt Name, Funktion und das **Tafel-Stichwort** als die eine Zeile
+  (z. B. „an Probleme anknüpfen“). Die ausführlichen Türöffner-Texte sind mit 200–300
+  Zeichen zu lang für einen Blick vor der Gruppe. Gibt es kein Stichwort, steht dort der
+  gekürzte erste Satz. Wischen zeigt die zweite Seite mit Erfahrung, Gebiet und „Für heute“.
+- **Kurznamen**: Zwei gleiche Vornamen werden automatisch mit Initiale unterschieden
+  („Matthias B.“, „Matthias G.“). Kurznamen sind in der Korrekturansicht änderbar.
+- Ein U mit 4 + 4 + 3 Plätzen passt gut in drei Textcontainer.
+
+Für den **Export** übernehme ich den Aufbau der Referenz: Sitzplan in U-Form mit farbigen
+Plätzen und Rundennummer, Gruppenfilter, Profilkarten, Gruppenübersicht, dazu die Marker und
+Notizen aus dem Seminar. Die Exportseite lädt keine externen Schriften, damit sie offline
+funktioniert und nichts nach außen meldet.
