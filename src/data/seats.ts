@@ -3,7 +3,7 @@ import type { Seat, SeatLayout } from './model'
 /** Ist die Zelle (row, col) im Layout ein Sitzplatz? */
 export function isSeatCell(layout: SeatLayout, row: number, col: number): boolean {
   if (row < 1 || col < 1 || row > layout.rows || col > layout.cols) return false
-  if (layout.kind === 'grid') return true
+  if (layout.kind === 'grid' || layout.kind === 'tables') return true
   // U-Form: linke Spalte, rechte Spalte und hinterste Reihe (offene Seite vorne beim Trainer)
   return col === 1 || col === layout.cols || row === layout.rows
 }
@@ -20,7 +20,9 @@ export function seatsOf(layout: SeatLayout): Seat[] {
 export function seatLabel(layout: SeatLayout, seat: Seat | null): string {
   if (!seat) return 'kein Platz'
   if (layout.kind === 'grid') return `Reihe ${seat.row}, Platz ${seat.col}`
-  if (seat.row === layout.rows && seat.col > 1 && seat.col < layout.cols) return `hinten ${seat.col - 1}`
+  if (layout.kind === 'tables') return `Tisch ${seat.row}, Platz ${seat.col}`
+  // U-Form aus Sicht des Trainers: Stirnseite gegenüber, links/rechts von vorne nach hinten gezählt
+  if (seat.row === layout.rows && seat.col > 1 && seat.col < layout.cols) return `Stirnseite ${seat.col - 1}`
   if (seat.col === 1) return `links ${seat.row}`
   if (seat.col === layout.cols) return `rechts ${seat.row}`
   return `Reihe ${seat.row}, Platz ${seat.col}`

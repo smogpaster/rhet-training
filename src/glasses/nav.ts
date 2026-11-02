@@ -13,6 +13,10 @@ export interface Screen {
   onLeave?(): void
   /** true: Bildschirm aktualisiert sich selbst, kein Neuaufbau bei Datenänderungen (vermeidet Flackern). */
   selfUpdating?: boolean
+  /** true: langes Drücken springt hier nicht zum Sitzplan (z. B. laufende Aufnahme) */
+  blocksQuickAccess?: boolean
+  /** markiert den Sitzplan-Bildschirm (Ziel des Schnellzugriffs) */
+  isSeatMap?: boolean
 }
 
 /** Navigations-Kontext, den jeder Bildschirm bekommt. */
@@ -30,10 +34,14 @@ export interface Nav {
   /** Nur einen Textcontainer aktualisieren (flackerfrei). */
   updateText(id: number, name: string, content: string, textColor?: number): void
   exitApp(): void
+  /** Schnellzugriff „Wer sitzt wo?“: zum Sitzplan zurück oder ihn öffnen. */
+  quickAccess(): void
 }
 
 export class Navigator implements Nav {
   private stack: Screen[] = []
+  /** Erzeugt den Sitzplan-Bildschirm (wird in main.ts gesetzt, vermeidet zyklische Importe). */
+  seatMapFactory: ((nav: Nav) => Screen) | null = null
 
   constructor(public store: Store, public renderer: Renderer, public host: GlassesHost) {}
 
@@ -81,13 +89,32 @@ export class Navigator implements Nav {
     void this.renderer.shutDown(1)
   }
 
+  quickAccess() {
+    const idx = this.stack.findIndex(s => s.isSeatMap)
+    if (idx >= 0) {
+      if (idx === this.stack.length - 1) return
+      while (this.stack.length - 1 > idx) this.stack.pop()?.onLeave?.()
+      this.render()
+      return
+    }
+    if (this.seatMapFactory) this.push(this.seatMapFactory(this))
+  }
+
   handle(input: GlassesInput) {
     if (input.kind === 'foreground') {
       this.render()
+      this.current?.onInput(input)
       return
     }
     if (input.kind === 'exit') {
       this.current?.onLeave?.()
+      return
+    }
+    if (input.kind === 'longRelease') return
+    if (input.kind === 'longPress') {
+      // Bildschirm darf zuerst reagieren (z. B. Marker-Schutz), danach Schnellzugriff
+      this.current?.onInput(input)
+      if (!this.current?.blocksQuickAccess) this.quickAccess()
       return
     }
     this.current?.onInput(input)

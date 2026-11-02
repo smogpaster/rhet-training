@@ -1,12 +1,13 @@
 import type { AppData, Workshop } from '../data/model'
 import type { Store } from '../data/store'
 import { audioStore } from '../session/audioStore'
+import { noteAudioKey } from '../session/notes'
 
 export function SettingsView({ store, data, ws }: { store: Store; data: AppData; ws: Workshop | null }) {
   const deleteWorkshop = () => {
     if (!ws) return
-    if (!confirm(`Workshop „${ws.title}“ mit allen Teilnehmenden, Sessions, Markern und Aufnahmen endgültig löschen?`)) return
-    void audioStore.removeMany(ws.sessions.map(s => s.id))
+    if (!confirm(`Workshop „${ws.title}“ mit allen Teilnehmenden, Profilen, Sessions, Markern, Notizen und Aufnahmen endgültig löschen?`)) return
+    void audioStore.removeMany([...ws.sessions.map(s => s.id), ...ws.notes.map(n => noteAudioKey(n.id))])
     store.update(d => {
       d.workshops = d.workshops.filter(w => w.id !== ws.id)
       d.activeWorkshopId = d.workshops[0]?.id ?? null

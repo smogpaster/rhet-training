@@ -5,6 +5,7 @@ import { MENU, MENU_EXIT } from './common'
 import { runningSession } from '../../session/session'
 import { ParticipantsScreen } from './participants'
 import { SessionScreen } from './session'
+import { SeatMapScreen } from './seatMap'
 
 type Item = { label: string; run: () => void }
 
@@ -21,6 +22,7 @@ export class HomeScreen implements Screen {
       items.push({ label: `▶ Session fortsetzen: ${name}`, run: () => this.nav.push(new SessionScreen(this.nav, running.id)) })
     }
     items.push(
+      { label: 'Sitzplan (wer sitzt wo?)', run: () => this.nav.push(new SeatMapScreen(this.nav)) },
       { label: 'Teilnehmende', run: () => this.nav.push(new ParticipantsScreen(this.nav)) },
       { label: 'Session starten', run: () => this.nav.push(new ParticipantsScreen(this.nav, { pickForSession: true })) },
       { label: 'App beenden', run: () => this.nav.exitApp() },

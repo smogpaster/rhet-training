@@ -2,7 +2,10 @@ import type { GlassesInput } from '../input'
 import { LIST_MAX_ITEMS, type PageSpec } from '../page'
 import type { Nav, Screen } from '../nav'
 import { MENU, MENU_EXIT, MENU_HOME } from './common'
-import { ParticipantDetailScreen } from './participantDetail'
+import { startSession } from '../../session/session'
+import { navigationOrder } from '../../data/people'
+import { ProfileScreen } from './profile'
+import { SessionScreen } from './session'
 
 const PAGE_SIZE = LIST_MAX_ITEMS - 2 // Platz für "◀ zurück" und "▶ weitere"
 
@@ -17,8 +20,13 @@ export class ParticipantsScreen implements Screen {
 
   constructor(private nav: Nav, private options: ParticipantsOptions = {}) {}
 
+  private people() {
+    const ws = this.nav.store.activeWorkshop()
+    return ws ? navigationOrder(ws) : []
+  }
+
   private names(): string[] {
-    return (this.nav.store.activeWorkshop()?.participants ?? []).map(p => p.name)
+    return this.people().map(p => p.name)
   }
 
   private pageCount(): number {
@@ -67,7 +75,15 @@ export class ParticipantsScreen implements Screen {
         return this.nav.render()
       }
       if (e.action === 'pick' && e.index !== undefined) {
-        return this.nav.push(new ParticipantDetailScreen(this.nav, e.index, this.options))
+        const p = this.people()[e.index]
+        const ws = this.nav.store.activeWorkshop()
+        if (!p || !ws) return
+        if (this.options.pickForSession) {
+          if (!ws.consentConfirmed) return this.nav.updateText(1, 'title', 'Erst Einwilligung auf dem iPhone bestätigen')
+          const s = startSession(this.nav.store, ws.id, p.id)
+          return this.nav.push(new SessionScreen(this.nav, s.id))
+        }
+        return this.nav.push(new ProfileScreen(this.nav, p.id))
       }
     }
   }

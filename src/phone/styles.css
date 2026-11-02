@@ -66,3 +66,17 @@ ul.list li.active { color: var(--accent); }
 .preview .clist div.sel { border-color: var(--ok); }
 .preview .controls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .preview .controls button { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 13px; }
+.seat .nr { display: block; font-size: 9px; color: var(--text-dim); }
+.seat.check { box-shadow: 0 0 0 1px var(--accent) inset; }
+.seat-label { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; }
+.badge { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); margin-right: 4px; }
+.badge.warn { border-color: var(--accent); color: var(--accent); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.chip { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 999px; padding: 4px 10px; font-size: 13px; }
+.chip.on { border-color: var(--accent); color: var(--accent); }
+.profile dt { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+.profile dd { margin: 0; }
+.timeline li { font-size: 14px; }
+details summary { cursor: pointer; color: var(--text-dim); font-size: 13px; }
+textarea.small { font-size: 14px; }

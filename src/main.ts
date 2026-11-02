@@ -10,6 +10,7 @@ import { MockHost } from './glasses/mockHost'
 import { Navigator } from './glasses/nav'
 import { Renderer } from './glasses/render'
 import { HomeScreen } from './glasses/screens/home'
+import { SeatMapScreen } from './glasses/screens/seatMap'
 import { App } from './phone/App'
 
 async function main() {
@@ -33,6 +34,7 @@ async function main() {
 
   // 4. Brillen-Oberfläche
   const nav = new Navigator(store, new Renderer(host), host)
+  nav.seatMapFactory = n => new SeatMapScreen(n)
   const unsubscribe = host.onEvenHubEvent(event => {
     const input = normalizeEvent(event)
     if (!input) return

@@ -1,4 +1,4 @@
-import { emptyData, type AppData, type Workshop } from './model'
+import { emptyData, migrate, type AppData, type Workshop } from './model'
 import { loadChunked, saveChunked, type KeyValueStore } from './storage'
 
 export const STORAGE_PREFIX = 'rhet.v1.data'
@@ -34,7 +34,7 @@ export class Store {
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as AppData
-        if (parsed && parsed.version === 1 && Array.isArray(parsed.workshops)) this.data = { ...emptyData(), ...parsed }
+        if (parsed && parsed.version === 1 && Array.isArray(parsed.workshops)) this.data = migrate({ ...emptyData(), ...parsed })
       } catch (err) {
         console.warn('Gespeicherte Daten konnten nicht gelesen werden', err)
       }

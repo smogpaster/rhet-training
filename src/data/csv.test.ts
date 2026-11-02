@@ -44,7 +44,7 @@ describe('Sitzplätze', () => {
     expect(isSeatCell(u, 3, 2)).toBe(true)
     expect(seatsOf(u)).toHaveLength(3 + 3 + 2)
     expect(seatLabel(u, { row: 2, col: 1 })).toBe('links 2')
-    expect(seatLabel(u, { row: 3, col: 2 })).toBe('hinten 1')
+    expect(seatLabel(u, { row: 3, col: 2 })).toBe('Stirnseite 1')
     expect(seatLabel(u, { row: 2, col: 4 })).toBe('rechts 2')
   })
 

@@ -1,6 +1,7 @@
 import { mmss } from '../../data/format'
 import { MARKER_LABEL, type MarkerKind, type Session } from '../../data/model'
 import { AudioRecorder } from '../../session/recorder'
+import { transcribeSession } from '../../session/transcription/service'
 import { audioStore } from '../../session/audioStore'
 import { addMarker, elapsedSec, endSession, findSession, removeMarker, setSessionAudio, togglePause } from '../../session/session'
 import type { GlassesInput } from '../input'
@@ -21,6 +22,8 @@ const DOUBLE_GRACE_MS = 450
  */
 export class SessionScreen implements Screen {
   selfUpdating = true
+  /** Während einer Rede bleibt die Session im Vordergrund; langes Drücken wird ignoriert. */
+  blocksQuickAccess = true
   private ticker: ReturnType<typeof setInterval> | null = null
   private confirmTimer: ReturnType<typeof setTimeout> | null = null
   private confirmText = ''
@@ -101,6 +104,10 @@ export class SessionScreen implements Screen {
     if (!wav) return
     const saved = await audioStore.save(this.sessionId, wav)
     setSessionAudio(this.nav.store, this.sessionId, saved)
+    // Mit OpenAI-Schlüssel direkt im Hintergrund transkribieren
+    if (saved && this.nav.store.get().settings.openaiApiKey.trim()) {
+      transcribeSession(this.nav.store, this.sessionId).catch(err => console.warn('Transkription fehlgeschlagen', err))
+    }
   }
 
   private end() {
