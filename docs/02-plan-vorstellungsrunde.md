@@ -97,7 +97,9 @@ deiner Seminar-Übersicht, sobald sie vorliegt.
   nicht zum Training genutzt). Vor dem ersten Aufruf je Workshop erscheint ein Hinweis.
 - Foto und Transkript werden nach dem Übernehmen standardmäßig gelöscht (Schalter).
 - „Workshop löschen“ entfernt zusätzlich Fotos, Transkripte, Profile und Sprachnotizen.
-- Der API-Schlüssel liegt nur lokal in den Einstellungen.
+- **Bring your own key**: Jede Nutzerin und jeder Nutzer trägt einen eigenen Claude-API-Schlüssel
+  in den Einstellungen ein. Der Schlüssel liegt nur lokal in der Even-App, nie im Code oder im
+  Paket. Ohne Schlüssel funktioniert alles außer der automatischen Auswertung (manuelle Eingabe).
 
 ## Schritte
 
@@ -144,3 +146,10 @@ Für den **Export** übernehme ich den Aufbau der Referenz: Sitzplan in U-Form m
 Plätzen und Rundennummer, Gruppenfilter, Profilkarten, Gruppenübersicht, dazu die Marker und
 Notizen aus dem Seminar. Die Exportseite lädt keine externen Schriften, damit sie offline
 funktioniert und nichts nach außen meldet.
+
+## Entscheidungen (Stand 02.11.2026)
+
+- Claude-Auswertung: freigegeben, als Bring your own key.
+- Spracherkennung: Das Even SDK 0.0.16 bietet keine. Die Transkription der Even-App
+  (Conversate, Transcribe) ist für Plugins nicht zugänglich, Audio kommt nur als rohes PCM.
+  Ein eigener Dienst wird nötig, ebenfalls als Bring your own key. Auswahl offen.
