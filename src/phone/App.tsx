@@ -1,6 +1,8 @@
 import { useState } from 'preact/hooks'
 import type { Store } from '../data/store'
+import type { GlassesHost } from '../glasses/host'
 import type { MockHost } from '../glasses/mockHost'
+import { ImportView } from './ImportView'
 import { GlassesPreview } from './GlassesPreview'
 import { ParticipantsView } from './ParticipantsView'
 import { SessionsView } from './SessionsView'
@@ -8,9 +10,9 @@ import { SettingsView } from './SettingsView'
 import { WorkshopsView } from './WorkshopsView'
 import { useStore } from './useStore'
 
-type Tab = 'workshops' | 'people' | 'sessions' | 'settings'
+type Tab = 'workshops' | 'people' | 'import' | 'sessions' | 'settings'
 
-export function App({ store, mock }: { store: Store; mock: MockHost | null }) {
+export function App({ store, mock, host }: { store: Store; mock: MockHost | null; host: GlassesHost }) {
   const data = useStore(store)
   const [tab, setTab] = useState<Tab>(data.workshops.length ? 'people' : 'workshops')
   const ws = data.workshops.find(w => w.id === data.activeWorkshopId) ?? null
@@ -25,6 +27,7 @@ export function App({ store, mock }: { store: Store; mock: MockHost | null }) {
         {mock && <GlassesPreview host={mock} />}
         {tab === 'workshops' && <WorkshopsView store={store} data={data} />}
         {tab === 'people' && <ParticipantsView store={store} ws={ws} />}
+        {tab === 'import' && <ImportView store={store} ws={ws} host={host} goTo={setTab} />}
         {tab === 'sessions' && <SessionsView store={store} ws={ws} />}
         {tab === 'settings' && <SettingsView store={store} data={data} ws={ws} />}
       </main>
@@ -32,7 +35,8 @@ export function App({ store, mock }: { store: Store; mock: MockHost | null }) {
         {(
           [
             ['workshops', 'Workshops'],
-            ['people', 'Teilnehmende'],
+            ['people', 'Personen'],
+            ['import', 'Import'],
             ['sessions', 'Sessions'],
             ['settings', 'Einstellungen'],
           ] as Array<[Tab, string]>

@@ -8,6 +8,8 @@ import type { Store } from '../data/store'
 import { audioStore } from '../session/audioStore'
 import { noteAudioKey, removePersonNote } from '../session/notes'
 import { SeatPlan } from './SeatPlan'
+import { overviewFileName, workshopToHtml } from '../export/overviewHtml'
+import { shareFile } from './share'
 
 const PROFILE_FIELDS: Array<[keyof Profile, string, boolean]> = [
   ['role', 'Funktion', false],
@@ -39,6 +41,7 @@ export function ParticipantsView({ store, ws }: { store: Store; ws: Workshop | n
   const [showCsv, setShowCsv] = useState(false)
   const [newGroupLabel, setNewGroupLabel] = useState('')
   const [filter, setFilter] = useState<string | null>(null)
+  const [shareMsg, setShareMsg] = useState('')
 
   if (!ws) return <p class="dim">Bitte zuerst unter „Workshops“ einen Workshop anlegen oder auswählen.</p>
 
@@ -132,7 +135,15 @@ export function ParticipantsView({ store, ws }: { store: Store; ws: Workshop | n
 
   return (
     <div>
-      <h2>{ws.title}</h2>
+      <div class="row between">
+        <h2>{ws.title}</h2>
+        {ws.participants.length > 0 && (
+          <button class="btn small" onClick={async () => setShareMsg(await shareFile(workshopToHtml(ws), overviewFileName(ws), 'text/html'))}>
+            Übersicht exportieren
+          </button>
+        )}
+      </div>
+      {shareMsg && <p class="small">{shareMsg}</p>}
 
       {checks.length > 0 && (
         <div class="notice">

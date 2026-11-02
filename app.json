@@ -2,14 +2,30 @@
   "package_id": "de.smogpaster.rhettraining",
   "edition": "202601",
   "name": "Rhetoriktrainer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "min_app_version": "2.2.10",
   "min_sdk_version": "0.0.16",
   "entrypoint": "index.html",
   "permissions": [
     {
       "name": "g2-microphone",
-      "desc": "Nimmt die Rede der teilnehmenden Person über das Brillenmikrofon auf, um Feedback-Marker mit Transkript-Ausschnitten zu versehen."
+      "desc": "Nimmt Reden, Sprachnotizen und die Vorstellungsrunde über das Brillenmikrofon auf."
+    },
+    {
+      "name": "network",
+      "desc": "Auswertung der Vorstellungsrunde mit Claude und Spracherkennung mit OpenAI, jeweils mit eigenem API-Schlüssel.",
+      "whitelist": [
+        "https://api.anthropic.com",
+        "https://api.openai.com"
+      ]
+    },
+    {
+      "name": "album",
+      "desc": "Foto des handgezeichneten Sitzplans aus den Fotos wählen."
+    },
+    {
+      "name": "camera",
+      "desc": "Sitzplan direkt mit der iPhone-Kamera fotografieren."
     }
   ],
   "supported_languages": [

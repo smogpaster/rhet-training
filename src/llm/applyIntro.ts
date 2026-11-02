@@ -17,9 +17,29 @@ export function normalizeName(name: string): string {
     .trim()
 }
 
+type Area = 'links' | 'stirnseite' | 'rechts' | 'reihe' | 'tisch'
+
+/** Bereichsangabe aus der Antwort tolerant lesen (Groß-/Kleinschreibung, Umschreibungen). */
+export function normalizeArea(area: string): Area | null {
+  const a = area.toLowerCase().trim()
+  if (a.startsWith('link')) return 'links'
+  if (a.startsWith('recht')) return 'rechts'
+  if (a.startsWith('stirn') || a === 'oben' || a === 'hinten' || a === 'top' || a === 'back') return 'stirnseite'
+  if (a.startsWith('reih') || a === 'row') return 'reihe'
+  if (a.startsWith('tisch') || a === 'table') return 'tisch'
+  return null
+}
+
+export function normalizeKind(kind: string): SeatLayout['kind'] {
+  const k = kind.toLowerCase().trim()
+  if (k.startsWith('table') || k.startsWith('tisch')) return 'tables'
+  if (k.startsWith('grid') || k.startsWith('reih')) return 'grid'
+  return 'u'
+}
+
 /** Leitet aus den Sitzangaben die Layoutgröße ab. */
 export function layoutFor(kind: SeatLayout['kind'], refs: SeatRef[], current: SeatLayout): SeatLayout {
-  const max = (f: (r: SeatRef) => number, area?: (a: SeatRef['area']) => boolean) => Math.max(0, ...refs.filter(r => !area || area(r.area)).map(f))
+  const max = (f: (r: SeatRef) => number, area?: (a: Area | null) => boolean) => Math.max(0, ...refs.filter(r => !area || area(normalizeArea(r.area))).map(f))
   if (kind === 'u') {
     const side = max(r => r.position, a => a === 'links' || a === 'rechts')
     const back = max(r => r.position, a => a === 'stirnseite')
@@ -33,12 +53,14 @@ export function layoutFor(kind: SeatLayout['kind'], refs: SeatRef[], current: Se
 /** Übersetzt einen Sitzbezug in Reihe/Spalte des Layouts. */
 export function seatFor(layout: SeatLayout, ref: SeatRef): Seat | null {
   if (ref.position < 1) return null
+  const area = normalizeArea(ref.area)
   if (layout.kind === 'u') {
-    if (ref.area === 'links') return { row: ref.position, col: 1 }
-    if (ref.area === 'rechts') return { row: ref.position, col: layout.cols }
-    if (ref.area === 'stirnseite') return { row: layout.rows, col: ref.position + 1 }
+    if (area === 'links') return { row: ref.position, col: 1 }
+    if (area === 'rechts') return { row: ref.position, col: layout.cols }
+    if (area === 'stirnseite') return { row: layout.rows, col: ref.position + 1 }
     return null
   }
+  if (!area) return null
   if (ref.group < 1) return null
   return { row: ref.group, col: ref.position }
 }
@@ -52,7 +74,7 @@ export interface ApplySummary {
 /** Wendet das Ergebnis auf den Workshop an (verändert ws). */
 export function applyIntroResult(ws: Workshop, result: IntroResult, question: string): ApplySummary {
   const summary: ApplySummary = { created: 0, updated: 0, checks: 0 }
-  ws.layout = layoutFor(result.layoutKind, result.people.flatMap(p => (p.seat ? [p.seat] : [])), ws.layout)
+  ws.layout = layoutFor(normalizeKind(result.layoutKind), result.people.flatMap(p => (p.seat ? [p.seat] : [])), ws.layout)
 
   // Gruppen nach Bezeichnung zuordnen bzw. anlegen
   const groupId = (label: string): string | null => {

@@ -4,6 +4,7 @@ import { MARKER_LABEL, type Session, type Workshop } from '../data/model'
 import type { Store } from '../data/store'
 import { exportFileName, sessionToMarkdown } from '../export/markdown'
 import { audioStore } from '../session/audioStore'
+import { transcribeSession } from '../session/transcription/service'
 import { deleteSession, elapsedSec, endSession, setSessionAudio } from '../session/session'
 
 function useNow(active: boolean): number {
@@ -44,6 +45,7 @@ export function SessionsView({ store, ws }: { store: Store; ws: Workshop | null 
   const [openId, setOpenId] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [showMd, setShowMd] = useState(false)
+  const [busy, setBusy] = useState('')
   const running = ws?.sessions.find(s => s.status === 'running') ?? null
   const now = useNow(!!running)
 
@@ -83,7 +85,7 @@ export function SessionsView({ store, ws }: { store: Store; ws: Workshop | null 
               <div>
                 <strong>{mmss(m.t)}</strong> · {MARKER_LABEL[m.kind]}
               </div>
-              <div class="small dim">{m.excerpt ?? 'Transkript-Ausschnitt folgt nach der Transkription (Meilenstein 4).'}</div>
+              <div class="small dim">{m.excerpt ?? 'Noch kein Transkript-Ausschnitt.'}</div>
             </li>
           ))}
         </ul>
@@ -96,8 +98,23 @@ export function SessionsView({ store, ws }: { store: Store; ws: Workshop | null 
               <div>
                 <p class="small">Aufnahme gespeichert, noch nicht transkribiert.</p>
                 <div class="row wrap">
-                  <button class="btn" disabled title="Kommt in Meilenstein 4">
-                    Transkribieren (Dienst noch nicht gewählt)
+                  <button
+                    class="btn"
+                    disabled={!store.get().settings.openaiApiKey.trim() || !!busy}
+                    onClick={async () => {
+                      setBusy('Transkribiere …')
+                      setMessage('')
+                      try {
+                        await transcribeSession(store, open.id, setBusy)
+                        setMessage('Transkript erstellt, Ausschnitte an den Markern ergänzt.')
+                      } catch (err) {
+                        setMessage((err as Error).message)
+                      } finally {
+                        setBusy('')
+                      }
+                    }}
+                  >
+                    {busy || (store.get().settings.openaiApiKey.trim() ? 'Transkribieren' : 'Transkribieren (OpenAI-Schlüssel fehlt)')}
                   </button>
                   <button
                     class="btn danger small"

@@ -153,3 +153,17 @@ funktioniert und nichts nach außen meldet.
 - Spracherkennung: Das Even SDK 0.0.16 bietet keine. Die Transkription der Even-App
   (Conversate, Transcribe) ist für Plugins nicht zugänglich, Audio kommt nur als rohes PCM.
   Ein eigener Dienst wird nötig, ebenfalls als Bring your own key. Auswahl offen.
+
+## Umsetzungsstand (02.11.2026)
+
+Alle fünf Schritte sind umgesetzt und mit Unit-Tests, im Browser (Claude und OpenAI simuliert) und im
+offiziellen Simulator geprüft. Ein echter Aufruf mit deinen Schlüsseln und der Test auf der Brille
+stehen noch aus (Checkliste in `01-auf-die-brille.md`).
+
+| Schritt | Ergebnis |
+|---|---|
+| 1 Datenmodell, Korrektur | Profile, Gruppen, Rundenreihenfolge, Prüfhinweise mit Namensvarianten, Zeitleiste je Person |
+| 2 Brille | Sitzplan (U, Reihen, Tische), Kurzprofil, Marker an der Person, Gruppenfilter, langes Drücken = Sitzplan |
+| 3 Import, Claude | Transkript als Text, Audiodatei oder Aufnahme mit dem Brillenmikrofon; Foto; Auswertung mit Claude Opus 5.5 |
+| 4 Export | eigenständige HTML-Seite im Aufbau der Seminar-Übersicht, als PDF druckbar |
+| 5 Sprachnotizen | Aufnahme an der Person, Transkription mit OpenAI whisper-1, Audio danach gelöscht (Einstellung) |

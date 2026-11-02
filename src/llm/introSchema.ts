@@ -6,7 +6,7 @@ import { z } from 'zod'
  */
 export const SeatRefSchema = z.object({
   /** links/rechts/stirnseite bei U-Form, reihe bei Reihen, tisch bei Tischgruppen */
-  area: z.enum(['links', 'stirnseite', 'rechts', 'reihe', 'tisch']),
+  area: z.string().describe('links | stirnseite | rechts | reihe | tisch'),
   /** Reihen- bzw. Tischnummer; bei U-Form immer 1 */
   group: z.number().int(),
   /** Position im Bereich, Zählweise siehe Prompt */
@@ -34,7 +34,7 @@ export const IntroPersonSchema = z.object({
 })
 
 export const IntroResultSchema = z.object({
-  layoutKind: z.enum(['u', 'grid', 'tables']),
+  layoutKind: z.string().describe('u | grid | tables'),
   layoutNote: z.string(),
   groups: z.array(z.string()),
   people: z.array(IntroPersonSchema),

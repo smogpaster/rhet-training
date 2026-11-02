@@ -2,6 +2,7 @@
 // der MockHost (Desktop-Browser ohne Even-App) ebenfalls.
 import {
   waitForEvenAppBridge,
+  type AppImageAsset,
   type AudioInputSource,
   type CreateStartUpPageContainer,
   type EvenHubEvent,
@@ -18,6 +19,9 @@ export interface GlassesHost {
   setLocalStorage(key: string, value: string): Promise<boolean>
   getLocalStorage(key: string): Promise<string>
   onEvenHubEvent(callback: (event: EvenHubEvent) => void): () => void
+  /** nur in der Even-App vorhanden (Berechtigungen album / camera) */
+  pickImageFromAlbum?(): Promise<AppImageAsset | null>
+  captureImageFromCamera?(): Promise<AppImageAsset | null>
 }
 
 /** Even-App und Simulator stellen `window.flutter_inappwebview.callHandler` bereit. */

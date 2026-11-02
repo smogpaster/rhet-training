@@ -80,3 +80,7 @@ ul.list li.active { color: var(--accent); }
 .timeline li { font-size: 14px; }
 details summary { cursor: pointer; color: var(--text-dim); font-size: 13px; }
 textarea.small { font-size: 14px; }
+label.btn { display: inline-block; cursor: pointer; }
+label.btn.disabled { opacity: 0.5; pointer-events: none; }
+.row.wrap > .field { flex: 1 1 140px; min-width: 0; }
+.row.wrap > .field.grow { flex: 2 1 180px; }

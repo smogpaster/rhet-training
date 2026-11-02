@@ -70,15 +70,34 @@ Diese Punkte konnten im Simulator nicht geprüft werden und stehen in der Doku n
 - [ ] **Lesbarkeit**: Helligkeitsstufen der Hinweiszeilen (dunkel) und der Redezeit anpassen,
       falls nötig (`textColor` in den Bildschirmen unter `src/glasses/screens/`).
 
+### Neu mit der Teilnehmenden-Übersicht
+
+- [ ] **Langes Drücken** am Ring springt zum Sitzplan. Prüfen, ob das sauber von der Geste fürs
+      Kontextmenü (Tipp, dann lange drücken) getrennt ankommt.
+- [ ] **Tipp vor dem Kontextmenü**: Meldet die Brille beim Öffnen des Menüs zuerst einen Einfachtipp,
+      entsteht im Profil ein ungewollter Marker „stark“. Die App löscht einen Tipp, auf den innerhalb
+      von 0,8 s ein langes Drücken folgt. Bleibt trotzdem ein Marker übrig: im Menü „Letzten Marker löschen“
+      und mir Bescheid geben.
+- [ ] **Sitzplan lesbar?** Helligkeit der Namen (gedimmt) und der Infozeile vor der Gruppe prüfen.
+- [ ] **Foto aus der Mediathek / Kamera** im Import (nur in der Even-App, Berechtigungen `album`, `camera`).
+- [ ] **Claude und OpenAI** antworten aus der Even-App (Netzwerk-Freigabe in `app.json`). Bei
+      „Keine Verbindung“: Internet prüfen, dann mir die Fehlermeldung schicken.
+- [ ] **Sprachnotiz**: im Profil über das Kontextmenü, Tipp beendet. Der Text erscheint nach einigen
+      Sekunden in der Zeitleiste der Person auf dem iPhone.
+
 ## Bedienung auf der Brille
 
 | Bildschirm | Einfachtipp | Doppeltipp | Wischen | Kontextmenü (Tipp, dann lange drücken) |
 |---|---|---|---|---|
 | Startseite | Eintrag wählen | – | Liste | App beenden |
-| Teilnehmende | Person öffnen | zurück | Liste | Startseite, App beenden |
-| Person | Session starten | zurück | vorherige/nächste Person | Startseite, App beenden |
+| Sitzplan | Kurzprofil öffnen | zurück | nächste/vorige Person (Rundenreihenfolge) | Filter wechseln, Startseite, App beenden |
+| Kurzprofil | Marker „stark“ | Marker „besprechen“ | nächste/vorige Person | Sitzplan, Sprachnotiz, Letzten Marker löschen, Rede-Session starten, Startseite |
+| Teilnehmende | Kurzprofil öffnen | zurück | Liste | Startseite, App beenden |
 | Session | Marker „stark“ | Marker „besprechen“ | – | Pause/Weiter, Session beenden, App beenden |
 | Rückblick | – | Startseite | Seite vor/zurück | Startseite, App beenden |
+
+**Langes Drücken** führt von überall (außer während einer Rede oder Sprachnotiz) zum Sitzplan:
+Schnellzugriff „Wer sitzt wo?“.
 
 Vor der ersten Session eines Workshops muss auf dem iPhone unter „Sessions“ bestätigt werden,
 dass die Einwilligung der Teilnehmenden vorliegt. Sonst startet die Brille keine Session.

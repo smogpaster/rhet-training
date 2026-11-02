@@ -93,3 +93,14 @@ describe('applyIntroResult', () => {
     expect(normalizeName('Göttlicher')).toBe(normalizeName('Goettlicher'))
   })
 })
+
+describe('tolerant parsing', () => {
+  it('accepts variants of area and layout names', async () => {
+    const { normalizeArea, normalizeKind } = await import('./applyIntro')
+    expect(normalizeArea('Links')).toBe('links')
+    expect(normalizeArea('Stirnseite (Tische)')).toBe('stirnseite')
+    expect(normalizeArea('irgendwo')).toBeNull()
+    expect(normalizeKind('U-Form')).toBe('u')
+    expect(normalizeKind('Tischgruppen')).toBe('tables')
+  })
+})

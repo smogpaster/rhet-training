@@ -30,7 +30,7 @@ async function main() {
   }
 
   // 3. iPhone-Oberfläche
-  render(h(App, { store, mock }), document.getElementById('app')!)
+  render(h(App, { store, mock, host }), document.getElementById('app')!)
 
   // 4. Brillen-Oberfläche
   const nav = new Navigator(store, new Renderer(host), host)
